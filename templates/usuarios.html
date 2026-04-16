@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Usuarios Registrados</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #0a0c0f;
+      --surface: #111418;
+      --border:  #1e2530;
+      --accent:  #00d4aa;
+      --accent2: #0099ff;
+      --text:    #cdd6f4;
+      --muted:   #6272a4;
+      --mono:    'Share Tech Mono', monospace;
+      --sans:    'Barlow', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      animation: slideIn .5s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header .tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      display: block;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .6rem 1.2rem;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      transition: background .2s, color .2s;
+    }
+    .btn-back:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1.25rem;
+      font-family: var(--mono);
+    }
+    .stat .num {
+      font-size: 1.5rem;
+      color: var(--accent);
+      font-weight: 700;
+      display: block;
+    }
+    .stat .lbl {
+      font-size: .7rem;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .table-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      padding: 1rem;
+      text-align: left;
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      background: rgba(0,0,0,.2);
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(0,212,170,.04); }
+    td {
+      padding: .9rem 1rem;
+      font-size: .9rem;
+      vertical-align: middle;
+    }
+    .td-id {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: .8rem;
+      width: 40px;
+    }
+    .td-name { font-weight: 600; }
+    .td-email { color: var(--accent2); font-size: .85rem; }
+    .td-phone { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+    .td-date  { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+
+    .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: .9rem;
+    }
+    .empty span { display: block; font-size: 3rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div>
+      <span class="tag">// Base de datos</span>
+      <h1>Usuarios Registrados</h1>
+    </div>
+    <a href="/" class="btn-back">← Menú principal</a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="num">{{ usuarios|length }}</span>
+      <span class="lbl">Total usuarios</span>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    {% if usuarios %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Correo electrónico</th>
+          <th>Celular</th>
+          <th>Fecha registro</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td class="td-id">{{ u.id }}</td>
+          <td class="td-name">{{ u.nombre }}</td>
+          <td class="td-email">{{ u.correo }}</td>
+          <td class="td-phone">{{ u.celular }}</td>
+          <td class="td-date">{{ u.fecha_registro }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">
+      <span>🗄️</span>
+      No hay usuarios registrados aún.
+    </div>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menú principal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0a0c0f;
+      --surface:   #111418;
+      --border:    #1e2530;
+      --accent:    #00d4aa;
+      --accent2:   #0099ff;
+      --danger:    #ff4757;
+      --success:   #2ed573;
+      --text:      #cdd6f4;
+      --muted:     #6272a4;
+      --mono:      'Share Tech Mono', monospace;
+      --sans:      'Barlow', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      position: relative;
+      z-index: 1;
+      animation: slideIn .5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity:0; transform: translateY(24px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .header .tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: .5rem;
+    }
+    .header h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: .5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .tile {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      background: rgba(0,0,0,.25);
+      transition: transform .12s ease, border-color .2s ease, box-shadow .2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .tile:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,212,170,.55);
+      box-shadow: 0 0 0 3px rgba(0,212,170,.08);
+    }
+    .tile .kicker {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .tile .title {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-top: .55rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .tile .desc {
+      margin-top: .5rem;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.35;
+    }
+
+    .cta {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    .cta code {
+      font-family: var(--mono);
+      color: var(--text);
+      background: rgba(0,0,0,.25);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .25rem .5rem;
+      display: inline-block;
+    }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="tag">// Menú principal</span>
+      <h1>Sistema de Registro</h1>
+      <p>Elige una opción para continuar.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <a class="tile" href="/registro">
+          <div class="kicker">alta de usuario</div>
+          <div class="title">🧾 Registrar usuario</div>
+          <div class="desc">Captura nombre, correo, celular y contraseña con validaciones.</div>
+        </a>
+
+        <a class="tile" href="/usuarios">
+          <div class="kicker">consulta</div>
+          <div class="title">🗄️ Ver usuarios</div>
+          <div class="desc">Lista de usuarios registrados con fecha de alta.</div>
+        </a>
+      </div>
+
+      <div class="cta">
+        <div>Tip: si el puerto 5000 está ocupado, ejecuta con <code>PORT=5001</code>.</div>
+        <div style="font-family: var(--mono);">v1.0</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

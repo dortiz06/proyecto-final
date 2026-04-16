@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# SQLite DB (local)
+usuarios.db
+*.db
+
+# macOS / editor
+.DS_Store
+.vscode/
+
+# Flask
+instance/
+

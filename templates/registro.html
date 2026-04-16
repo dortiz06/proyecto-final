@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registro de Usuario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0a0c0f;
+      --surface:   #111418;
+      --border:    #1e2530;
+      --accent:    #00d4aa;
+      --accent2:   #0099ff;
+      --danger:    #ff4757;
+      --success:   #2ed573;
+      --text:      #cdd6f4;
+      --muted:     #6272a4;
+      --mono:      'Share Tech Mono', monospace;
+      --sans:      'Barlow', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,170,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,170,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 1;
+      animation: slideIn .5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity:0; transform: translateY(24px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .header .tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: .5rem;
+    }
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: .4rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    /* Form groups */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .5rem;
+    }
+    label .icon { font-size: .95rem; }
+
+    input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: .95rem;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,212,170,.12);
+    }
+    input.error  { border-color: var(--danger); }
+    input.valid  { border-color: var(--success); }
+    input::placeholder { color: #3d4560; }
+
+    /* Password strength */
+    .strength-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: .5rem;
+    }
+    .strength-bar span {
+      flex: 1;
+      height: 3px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background .3s;
+    }
+    .strength-bar span.active { background: var(--accent); }
+    .strength-bar span.weak   { background: var(--danger); }
+    .strength-bar span.medium { background: #ffa500; }
+    .strength-bar span.strong { background: var(--success); }
+
+    .strength-label {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: .3rem;
+      height: .9rem;
+      transition: color .3s;
+    }
+
+    /* Requirements checklist */
+    .requirements {
+      background: rgba(0,0,0,.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      margin-top: .5rem;
+      display: none;
+    }
+    .requirements.visible { display: block; }
+    .req-item {
+      font-size: .78rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .15rem 0;
+      transition: color .2s;
+    }
+    .req-item.met { color: var(--success); }
+    .req-item .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* Submit button */
+    .btn {
+      width: 100%;
+      padding: .85rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+      font-family: var(--sans);
+      font-size: .95rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      margin-top: .5rem;
+    }
+    .btn:hover { opacity: .9; }
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Alert messages */
+    .alert {
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      font-size: .875rem;
+      display: none;
+      animation: fadeIn .3s ease;
+    }
+    .alert.show { display: block; }
+    .alert.success {
+      background: rgba(46,213,115,.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+    .alert.danger {
+      background: rgba(255,71,87,.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .alert ul { list-style: none; padding: 0; }
+    .alert ul li::before { content: '→ '; }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform: translateY(-8px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .footer-link {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .footer-link a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .footer-link a:hover { text-decoration: underline; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--border);
+      font-size: .7rem;
+      font-family: var(--mono);
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <span class="tag">// Sistema de Registro</span>
+    <h1>Crear Cuenta</h1>
+    <p>Completa los datos para registrarte en el sistema</p>
+  </div>
+
+  <div class="card">
+    <div id="alertBox" class="alert"></div>
+
+    <form id="regForm" novalidate>
+      <!-- Nombre -->
+      <div class="form-group">
+        <label><span class="icon">👤</span> Nombre completo</label>
+        <input
+          type="text"
+          id="nombre"
+          name="nombre"
+          placeholder="Ej. Juan Pérez García"
+          autocomplete="name"
+          required
+        />
+      </div>
+
+      <!-- Correo -->
+      <div class="form-group">
+        <label><span class="icon">✉️</span> Correo electrónico</label>
+        <input
+          type="email"
+          id="correo"
+          name="correo"
+          placeholder="usuario@dominio.com"
+          autocomplete="email"
+          required
+          inputmode="email"
+        />
+      </div>
+
+      <!-- Celular -->
+      <div class="form-group">
+        <label><span class="icon">📱</span> Número de celular</label>
+        <input
+          type="tel"
+          id="celular"
+          name="celular"
+          placeholder="10 dígitos"
+          maxlength="10"
+          minlength="10"
+          autocomplete="tel"
+          required
+          inputmode="numeric"
+          pattern="^\d{10}$"
+          title="Debe tener exactamente 10 dígitos (solo números)"
+        />
+      </div>
+
+      <div class="divider">contraseña</div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label><span class="icon">🔒</span> Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Mínimo 10 caracteres"
+          required
+          minlength="10"
+          pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{10,}$"
+          title="Mínimo 10 caracteres, con 1 mayúscula, 1 minúscula, 1 número y 1 especial (!@#$%^&*)"
+          autocomplete="new-password"
+        />
+        <div class="strength-bar">
+          <span id="s1"></span><span id="s2"></span>
+          <span id="s3"></span><span id="s4"></span><span id="s5"></span>
+        </div>
+        <div class="strength-label" id="strengthLabel"></div>
+        <div class="requirements" id="reqs">
+          <div class="req-item" id="req-len"><span class="dot"></span>Mínimo 10 caracteres</div>
+          <div class="req-item" id="req-upper"><span class="dot"></span>Al menos una mayúscula (A-Z)</div>
+          <div class="req-item" id="req-lower"><span class="dot"></span>Al menos una minúscula (a-z)</div>
+          <div class="req-item" id="req-num"><span class="dot"></span>Al menos un número (0-9)</div>
+          <div class="req-item" id="req-special"><span class="dot"></span>Al menos un carácter especial (!@#$%^&*)</div>
+        </div>
+      </div>
+
+      <!-- Confirmar -->
+      <div class="form-group">
+        <label><span class="icon">🔑</span> Confirmar contraseña</label>
+        <input
+          type="password"
+          id="confirmar"
+          name="confirmar_password"
+          placeholder="Repite tu contraseña"
+          required
+          autocomplete="new-password"
+        />
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Registrar Usuario</button>
+    </form>
+
+    <div class="footer-link">
+
+      <a href="/">Menú principal</a> · <a href="/usuarios">Ver usuarios registrados</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const nombre   = document.getElementById('nombre');
+  const correo   = document.getElementById('correo');
+  const celular  = document.getElementById('celular');
+  const password = document.getElementById('password');
+  const confirmar = document.getElementById('confirmar');
+  const alertBox = document.getElementById('alertBox');
+  const reqs     = document.getElementById('reqs');
+  const strengthLabel = document.getElementById('strengthLabel');
+  const bars = [document.getElementById('s1'), document.getElementById('s2'),
+                document.getElementById('s3'), document.getElementById('s4'),
+                document.getElementById('s5')];
+
+  function validarCorreoLocal(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  }
+
+  function validarCelLocal(v) {
+    return /^\d{10}$/.test(v);
+  }
+
+  function validarPasswordLocal(pw) {
+    const errores = [];
+    if (!pw) errores.push('La contraseña no puede estar vacía');
+    if (pw.length < 10) errores.push('Debe tener mínimo 10 caracteres');
+    if (!/[A-Z]/.test(pw)) errores.push('Debe contener al menos una mayúscula');
+    if (!/[a-z]/.test(pw)) errores.push('Debe contener al menos una minúscula');
+    if (!/[0-9]/.test(pw)) errores.push('Debe contener al menos un número');
+    if (!/[!@#$%^&*]/.test(pw)) errores.push('Debe contener al menos un carácter especial (!@#$%^&*)');
+    return errores;
+  }
+
+  function validarFormulario() {
+    const errores = [];
+    const n = nombre.value.trim();
+    const c = correo.value.trim();
+    const cel = celular.value.trim();
+    const pw = password.value;
+    const conf = confirmar.value;
+
+    if (!n) errores.push('El nombre no puede estar vacío');
+    if (!c) errores.push('El correo no puede estar vacío');
+    else if (!validarCorreoLocal(c)) errores.push('El correo electrónico no tiene un formato válido');
+
+    if (!cel) errores.push('El celular no puede estar vacío');
+    else if (!validarCelLocal(cel)) errores.push('El celular debe tener exactamente 10 dígitos (solo números)');
+
+    errores.push(...validarPasswordLocal(pw));
+
+    if (pw !== conf) errores.push('Las contraseñas no coinciden');
+
+    // UI states
+    nombre.className = n ? 'valid' : 'error';
+    correo.className = c ? (validarCorreoLocal(c) ? 'valid' : 'error') : 'error';
+    celular.className = cel ? (validarCelLocal(cel) ? 'valid' : 'error') : 'error';
+    password.className = pw && validarPasswordLocal(pw).length === 0 ? 'valid' : 'error';
+    confirmar.className = conf ? (pw === conf ? 'valid' : 'error') : 'error';
+
+    return errores;
+  }
+
+  // Solo números en celular
+  celular.addEventListener('input', () => {
+    celular.value = celular.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  // Validación en tiempo real - correo
+  correo.addEventListener('blur', () => {
+    const v = validarCorreoLocal(correo.value.trim());
+    correo.className = correo.value ? (v ? 'valid' : 'error') : '';
+  });
+
+  // Validación en tiempo real - celular
+  celular.addEventListener('blur', () => {
+    const v = validarCelLocal(celular.value);
+    celular.className = celular.value ? (v ? 'valid' : 'error') : '';
+  });
+
+  // Password requirements
+  function checkReqs(pw) {
+    return {
+      len:     pw.length >= 10,
+      upper:   /[A-Z]/.test(pw),
+      lower:   /[a-z]/.test(pw),
+      num:     /[0-9]/.test(pw),
+      special: /[!@#$%^&*]/.test(pw)
+    };
+  }
+
+  password.addEventListener('focus', () => reqs.classList.add('visible'));
+
+  password.addEventListener('input', () => {
+    const pw = password.value;
+    const r  = checkReqs(pw);
+    const met = Object.values(r).filter(Boolean).length;
+
+    // Update requirement items
+    ['len','upper','lower','num','special'].forEach(k => {
+      document.getElementById('req-' + k).className = 'req-item' + (r[k] ? ' met' : '');
+    });
+
+    // Strength bars
+    const levels = ['weak','weak','medium','strong','strong'];
+    bars.forEach((b, i) => {
+      b.className = i < met ? levels[met - 1] : '';
+    });
+
+    // Label
+    const labels = ['','Muy débil','Débil','Regular','Fuerte','Muy fuerte'];
+    const colors = ['','#ff4757','#ff6b35','#ffa500','#2ed573','#00d4aa'];
+    strengthLabel.textContent = pw ? labels[met] : '';
+    strengthLabel.style.color = pw ? colors[met] : '';
+
+    // Validate match
+    if (confirmar.value) {
+      confirmar.className = pw === confirmar.value ? 'valid' : 'error';
+    }
+  });
+
+  confirmar.addEventListener('input', () => {
+    confirmar.className = confirmar.value
+      ? (password.value === confirmar.value ? 'valid' : 'error')
+      : '';
+  });
+
+  // Submit
+  document.getElementById('regForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Registrando...';
+    hideAlert();
+
+    const erroresLocal = validarFormulario();
+    if (erroresLocal.length) {
+      showAlert('danger', null, erroresLocal);
+      btn.disabled = false;
+      btn.textContent = 'Registrar Usuario';
+      return;
+    }
+
+    const fd = new FormData(e.target);
+
+    try {
+      const res  = await fetch('/registro', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success) {
+        showAlert('success', data.mensaje);
+        e.target.reset();
+        ['nombre','correo','celular','password','confirmar'].forEach(id => {
+          document.getElementById(id).className = '';
+        });
+        bars.forEach(b => b.className = '');
+        strengthLabel.textContent = '';
+        reqs.classList.remove('visible');
+      } else {
+        showAlert('danger', null, data.errores);
+      }
+    } catch (err) {
+      showAlert('danger', null, ['Error de conexión con el servidor']);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Registrar Usuario';
+  });
+
+  function showAlert(type, msg, list) {
+    alertBox.className = `alert ${type} show`;
+    if (msg) {
+      alertBox.innerHTML = `✅ ${msg}`;
+    } else {
+      alertBox.innerHTML = '<ul>' + list.map(e => `<li>${e}</li>`).join('') + '</ul>';
+    }
+  }
+  function hideAlert() {
+    alertBox.className = 'alert';
+    alertBox.innerHTML = '';
+  }
+</script>
+</body>
+</html>
